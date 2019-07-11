@@ -56,7 +56,7 @@ $(document).ready(function () {
       function updateTime() {
         var time = snapshot.val().time;
         console.log(xy);
-        if (xy < 1) {
+        if (xy ==0) {
           time = moment(snapshot.time).add(snapshot.val().frequency, 'minutes');
           console.log(snapshot.val().frequency);
         }
@@ -89,7 +89,7 @@ $(document).ready(function () {
           
           console.log(timeOutMinutesAway);
           timeOutMinutesAway = moment(xy).subtract(1, 'minutes');
-          HTMLFormControlsCollection.log(timeOutMinutesAway);
+         console.log(timeOutMinutesAway);
           if (timeOutMinutesAway<1){
             timeOutMinutesAway=snapshot.val().frequency;
             console.log(timeOutMinutesAway);
