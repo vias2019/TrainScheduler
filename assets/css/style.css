@@ -1,0 +1,41 @@
+input {
+    max-width: 100%;
+
+}
+legend {
+    max-width: 100%;
+}
+.container {
+    text-align: center;
+}
+body {
+    margin: 15px;
+    background-image: url("background-1.jpg");
+    background-position: center; 
+    font-weight: bold;
+}
+.display-4{
+    font-weight: bold;
+}
+.lead {
+    font-weight: bold;
+}
+.train-schedule {
+    font-size: 25px;
+}
+tbody {
+    font-size: 20px;
+}
+.jumbotron-fluid {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-color: #a5c5a5;
+    border: 5px rgb(86, 121, 86) double;
+}
+.train-schedule,
+.table thead th, 
+.table td, 
+.table th,
+.table tr {
+    border: 1px solid rgb(66, 63, 63);
+} 
