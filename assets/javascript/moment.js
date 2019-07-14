@@ -1,5 +1,4 @@
 $(document).ready(function () {
-  var timeAway;
 
   var firebaseConfig = {
     apiKey: "AIzaSyBKuE_XGcgsP-6iio9Zaqb-CG3QquazmLw",
@@ -14,17 +13,15 @@ $(document).ready(function () {
 
   var database = firebase.database();
 
-  var now = new Date();
-  console.log(now);
-
   var trainscheduler = database.ref("/trains");
-  var trainObject = {
-    trainName: "Train A",
-    destination: "New York",
-    frequency: 25,
-    newArrival: "12:50",
-    minutesAway: 10
-  };
+  // created object as a back up to initialize firebase 
+  // var trainObject = {
+  //   trainName: "Train A",
+  //   destination: "New York",
+  //   frequency: 25,
+  //   newArrival: "12:50",
+  //   minutesAway: 10
+  // };
   //trainscheduler.push(trainObject);
 
   var listOfCities = [
@@ -50,29 +47,24 @@ $(document).ready(function () {
 
   function updateTable() {
     database.ref('/trains').on("child_added", function (snapshot) {
-      
-      var xy;
 
-      function updateTime() {
-        var time = snapshot.val().time;
-        console.log(xy);
-        if (xy ==0) {
-          time = moment(snapshot.time).add(snapshot.val().frequency, 'minutes');
-          console.log(snapshot.val().frequency);
-        }
-        console.log(time);
-        return time;
+      var xy;
+      var trainFrequency = snapshot.val().frequency;
+      var nextArrivalTime = moment((moment().month() + 1) + '/' + (moment().date()) + '/' + (moment().year()) + ", " + snapshot.val().time, "MM/DD/YYYY, HH:mm");
+      console.log(nextArrivalTime);
+      function updateNextArrivalTime() {
+        console.log(trainFrequency);
+        nextArrivalTime = moment(nextArrivalTime).add(trainFrequency, 'minutes');
+        console.log(nextArrivalTime);
       }
-     
-      function getDateForInput() {
+
+      function calcMinutesAway() {
         console.log(moment());
         console.log(moment().year());
         console.log(moment().month() + 1);
         console.log(moment().date());
-
         var x = (moment().month() + 1) + '/' + (moment().date()) + '/' + (moment().year()) + ", " + snapshot.val().time;
         console.log(x);
-
         xformat = moment(x, 'MM/DD/YYYY, HH:mm');
         var y = moment();
         console.log(y);
@@ -80,39 +72,35 @@ $(document).ready(function () {
         console.log(xy);
         return xy;
       }
-      getDateForInput();
+      calcMinutesAway();
 
-      var timeOutMinutesAway=xy;
+      var timeOutMinutesAway = calcMinutesAway();
       console.log(timeOutMinutesAway);
-      function timeOut() {
-        timeout = setTimeout(function () {
-          
+
+      function updateTime() {
+        var timeOutMinutesAway = xy--;
+        console.log(timeOutMinutesAway);
+        if (timeOutMinutesAway < 1) {
+          timeOutMinutesAway = snapshot.val().frequency;
           console.log(timeOutMinutesAway);
-          timeOutMinutesAway = moment(xy).subtract(1, 'minutes');
-         console.log(timeOutMinutesAway);
-          if (timeOutMinutesAway<1){
-            timeOutMinutesAway=snapshot.val().frequency;
-            console.log(timeOutMinutesAway);
-            
-          }
-        }, 60000);return timeOutMinutesAway;
+          updateNextArrivalTime();
+        }
+        $('#' + snapshot.val().trainName + '1').text(nextArrivalTime.format('HH:mm'));
+        $('#' + snapshot.val().trainName + '2').text(timeOutMinutesAway);
       }
-      
-      
-      //used in timeOut function below
-      // function checkIfMoreThanNow(object) {
-      //   var inputTime = getDateForInput(object);
-      //   var now = moment();
-      //   console.log(moment(xformat).diff(moment(), "minutes"));
-      //   return moment(xformat).diff(moment(), "minutes");
-      // }
+
+      // setInterval(function () {
+      // updateTime();
+
+      // }, 60000);
+
       $('#show-table').append(
         '<tr>' +
         '<td>' + snapshot.val().trainName + '</td>' +
         '<td>' + snapshot.val().destination + '</td>' +
         '<td>' + snapshot.val().frequency + '</td>' +
-        '<td>' + updateTime() + '</td>' +
-        '<td>' + timeOut() + '</td>' +
+        '<td id="' + snapshot.val().trainName + '1">' + nextArrivalTime.format('HH:mm') + '</td>' +
+        '<td id="' + snapshot.val().trainName + '2">' + timeOutMinutesAway + '</td>' +
         '</tr>'
       );
     });
@@ -120,6 +108,7 @@ $(document).ready(function () {
   updateTable();
 
   $("#clearSearch").on("click", function () {
+    event.preventDefault();
     clear();
   });
 
@@ -133,7 +122,5 @@ $(document).ready(function () {
       frequency: $('#frequency').val()
     };
     trainscheduler.push(newObjectForNewTrain);
-    //getDateForInput(newObjectForNewTrain);
-    //updateTable();
   });
 });
